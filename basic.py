@@ -2,6 +2,7 @@ import re
 from itertools import tee
 from itertools import islice
 from copy import deepcopy
+from time import sleep
 
 # Basic parsing functions
 
@@ -110,12 +111,18 @@ def gen_print(msg, success):
         return (success, pos, None)
     return parser
 
-
 #debugging
 def gen_print_remaining(limit, success):
     def parser(string, pos):
-        print(f"pos: {pos}")
+        print(f"### START pos: {pos}")
         print(string[pos:(pos + limit)])
-        print("END pos: {pos}")
+        print(f"### END pos: {pos + limit}")
+        return (success, pos, None)
+    return parser
+
+#debugging
+def gen_sleep(time, success):
+    def parser(string, pos):
+        sleep(time)  
         return (success, pos, None)
     return parser

@@ -67,31 +67,26 @@ print(result)
 
 print("[TEST] Crafts:")
 
-craftdata = ""
-with open ("Kaytrav TN7.craft", "r") as craftfile:
-    craftdata = craftfile.read()
+craftfilenames = ["Kaytrav TN7.craft", "Suwubi - 37C.craft", "YF-23 backup 69.craft"]
 
-#success, posRem, result = kspcfg.parse_property_any(craftdata, 0)
+for name in craftfilenames:
+    
+    print(f"Loading craft: {name}")
+    
+    craftdata = ""
+    with open (name, "r") as craftfile:
+        craftdata = craftfile.read()
 
+    print("* Parsing...")
+    success, _, craft_parsed = craft.parse_craft_file(craftdata, 0)
+    
+    print(f"* Parse successful: {success}")
 
-success, posRem, result = craft.parse_craft_file(craftdata, 0)
+    count = 0
 
-print(success)
-print(result)
-print(posRem)
+    for block in craft_parsed.blocks:
+        if block[0] == "PART":
+            count = count + 1
 
-#success, posRem, result = kspcfg.parse_property_any(craftdata, posRem)
-
-
-#print("".join(it_remaining))
-
-#count number of parts
-
-#count = 0
-
-#for mcdonaldstuple in result:
-    #if mcdonaldstuple[0] == "PART":
-        #count = count + 1
-
-#print("PART COUNT UWU: " + str(count))
+    print(f"* Part Count: {count}")
 

@@ -1,8 +1,8 @@
 from kspcfg import *
 
-parse_craft_file = gen_until(gen_first(
-    parse_property_any,
-    parse_block_any,
-    gen_print("don't now what to parse uvu", False),
-    gen_print_remaining(100, False)
-))
+def parse_craft_file(string, pos):
+    
+    success, posRem, block = parse_block_inside(string, pos)
+    if not success: return (False, pos, None)
+
+    return (True, posRem, block)
