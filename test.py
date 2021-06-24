@@ -1,80 +1,97 @@
 import basic
+import kspcfg
 import craft
 
 cat = "cat meow"
 bird = "birb caw"
 
+print("[TEST] String Compare:")
+
 parser = basic.gen_str_compare("cat");
 
-success, _, _ = parser(iter(cat))
+success, _, _ = parser(cat, 0)
+assert success == True, "parser(cat, 0) should return True"
 
-print(success)
+success, _, _ = parser(bird, 0)
+assert success == False, "parser(bird, 0) should return False"
 
-success, _, _ = parser(iter(bird))
+print("Good")
 
-print(success)
+print("[TEST] Parser Sequences:")
 
-success, itrem, _ = parser(iter(cat))
-print("".join(itrem))
+parser = basic.gen_seq(
+    basic.gen_str_compare("b"),
+    basic.gen_str_compare("i"),
+    basic.gen_str_compare("r"),
+    basic.gen_str_compare("b")
+);
 
-print(success)
+success, _, _ = parser(cat, 0)
+assert success == False, "parser(cat, 0) should return False"
 
-print("match seq test:")
+success, _, result = parser(bird, 0)
 
+assert (success == True and "".join(result) == "birb"), "parser(bird, 0) should return True and 'birb'"
 
-parser = basic.gen_seq(basic.gen_str_compare("b"), basic.gen_str_compare("i"), basic.gen_str_compare("r"), basic.gen_str_compare("b"));
+print("Good")
 
-success, _, _ = parser(iter(cat))
+print("[TEST] Until parser:")
 
-print(success)
+parser = basic.gen_until(
+    basic.gen_char_func(basic.char_alpha)
+);
 
-success, _, _ = parser(iter(bird))
+success, posLast, result = parser(bird, 0)
 
-print(success)
-
-success, _, _ = parser(iter(cat))
-
-print(success)
-
-print("gen_char_until:")
-
-parser = basic.gen_char_until(basic.char_alpha);
-
-success, ittt, result = parser(iter(bird))
-
-print(success)
-print("".join(result))
+assert (success == True and "".join(result) == "birb"), "parser(bird, 0) should return True and 'birb'"
 
 
-parser = basic.gen_char_until(basic.char_space);
+print("Good")
 
-success, _, result = parser(ittt)
+print("[TEST] Regex matching:")
 
-print(success)
-print("sp:" + "".join(result) + "..")
+textpression = "  morsa = Rock frog\n    sangoughenbraw = Spectacular tornado"
 
-print("crafts:")
+parser = basic.gen_until(
+    basic.gen_seq(
+        basic.gen_regex(r"\s*(\w+)\s*=", 1),
+        basic.gen_regex(r"\s*(.*)", 1)
+    )
+);
+
+success, posLast, result = parser(textpression, 0)
+
+
+
+print(result)
+
+print("[TEST] Crafts:")
 
 craftdata = ""
-with open ("persistent.sfs", "r") as craftfile:
+with open ("Kaytrav TN7.craft", "r") as craftfile:
     craftdata = craftfile.read()
 
-success, it_remaining, result = craft.parse_craft_file(iter(craftdata))
+#success, posRem, result = kspcfg.parse_property_any(craftdata, 0)
+
+
+success, posRem, result = craft.parse_craft_file(craftdata, 0)
 
 print(success)
-#print(result)
+print(result)
+print(posRem)
+
+#success, posRem, result = kspcfg.parse_property_any(craftdata, posRem)
+
+
 #print("".join(it_remaining))
-
-print("split time")
-
-splitted = craftdata.split("\n")
-
 
 #count number of parts
 
-count = 0
+#count = 0
 
+#for mcdonaldstuple in result:
+    #if mcdonaldstuple[0] == "PART":
+        #count = count + 1
 
-
-print("PART COUNT UWU: " + str(count))
+#print("PART COUNT UWU: " + str(count))
 

@@ -1,10 +1,5 @@
 from kspcfg import *
 
-parse_part_inside = gen_until(gen_first(
-    parse_property_any,
-    parse_block_any,
-))
-
 parse_craft_file = gen_until(gen_first(
     parse_property_any,
     parse_block_any,

@@ -1,3 +1,4 @@
+import re
 from itertools import tee
 from itertools import islice
 from copy import deepcopy
@@ -5,74 +6,90 @@ from copy import deepcopy
 # Basic parsing functions
 
 def gen_str_compare(to_match):
-    def parser(it):
-        itA = deepcopy(it)
-        if (''.join(islice(itA, len(to_match))) == to_match):
-            return (True, itA, to_match)
+    def parser(string, pos):
+        if (string.startswith(to_match, pos)):
+            return (True, pos + len(to_match), to_match)
         else:
-            return (False, it, "")
+            return (False, pos, None)
     return parser
 
 def gen_seq(*args):
-    def parser(it):
-        itA = deepcopy(it)
+    def parser(string, pos):
         results = []
+        posNew = pos
         for parse_func in args:
-            success, itA, result = parse_func(itA);
+            success, posNew, result = parse_func(string, posNew);
             if not success:
-                return (False, it, None)
+                return (False, pos, None)
             results.append(result)
-        return (True, itA, results)
+        return (True, posNew, results)
     return parser
 
 def gen_first(*args):
-    def parser(it):
+    def parser(string, pos):
         for parse_func in args:
-            success, itA, result = parse_func(it);
+            success, posNew, result = parse_func(string, pos);
             if success:
-                return (True, itA, result)
-        return (False, it, None)
+                return (True, posNew, result)
+        return (False, pos, None)
     return parser
 
 def gen_until(parse_func):
-    def parser(it):
-        itA = deepcopy(it)
+    def parser(string, pos):
+        posNew = pos
         results = []
         while True:
-            success, itA, result = parse_func(itA);
+            success, posNew, result = parse_func(string, posNew);
             if success:
                 results.append(result)
             else:
-                return (True, itA, results)
+                return (True, posNew, results)
     return parser
 
-
-def gen_char_until(char_func):
-    def parser(it):
-        itA = deepcopy(it)
-        itB = deepcopy(it)
-        results = []
-        try:
-            while True:
-                char_in = next(itA)
-                if char_func(char_in):
-                    results.append(char_in)
-                    next(itB)
-                else:
-                    break;
-        except StopIteration:
-            pass
-        return (True, itB, results)
+def gen_regex_groups(pattern, *groups):
+    regex = re.compile(pattern)
+    def parser(string, pos):
+        match = regex.match(string, pos)
+        if match != None:
+            return (True, match.span()[1], tuple(match.group(i) for i in groups))
+        else:
+            
+            return (False, pos, None)
     return parser
+
+def gen_regex(pattern, group):
+    regex = re.compile(pattern)
+    def parser(string, pos):
+        match = regex.match(string, pos)
+        if match != None:
+            return (True, match.span()[1], match.group(group))
+        else:
+            return (False, pos, None)
+    return parser
+    
+#def gen_char_until(char_func):
+    #def parser(string, pos):
+        #results = []
+        #posNew = pos
+        #try:
+            #while True:
+                #char_in = string[posNew]
+                #if char_func(char_in):
+                    #results.append(char_in)
+                    #posNew += 1
+                #else:
+                    #break;
+        #except StopIteration:
+            #pass
+        #return (True, posNew, results)
+    #return parser
 
 def gen_char_func(char_func):
-    def parser(it):
-        itA = deepcopy(it)
-        char_in = next(itA)
-        if char_func(char_in):
-            return (True, itA, char_in)
+    def parser(string, pos):
+        if char_func(string[pos]):
+            return (True, pos + 1, string[pos])
         else:
-            return (False, it, None)
+            return (False, pos, None)
     return parser
 
 def char_alpha(c): return c.isalpha()
@@ -88,16 +105,17 @@ def char_indent(c): return c == " " or c == "\t"
 
 #debugging
 def gen_print(msg, success):
-    def parser(it):
-        print(msg)
-        return (success, it, None)
+    def parser(string, pos):
+        print(msg)  
+        return (success, pos, None)
     return parser
 
 
 #debugging
 def gen_print_remaining(limit, success):
-    def parser(it):
-        itA = deepcopy(it)
-        print(''.join(islice(itA, limit)))
-        return (success, it, None)
+    def parser(string, pos):
+        print(f"pos: {pos}")
+        print(string[pos:(pos + limit)])
+        print("END pos: {pos}")
+        return (success, pos, None)
     return parser
