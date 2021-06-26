@@ -1,6 +1,7 @@
 import basic
 import kspcfg
 import craft
+import timeit
 
 cat = "cat meow"
 bird = "birb caw"
@@ -35,19 +36,6 @@ assert (success == True and "".join(result) == "birb"), "parser(bird, 0) should 
 
 print("Good")
 
-print("[TEST] Until parser:")
-
-parser = basic.gen_until(
-    basic.gen_char_func(basic.char_alpha)
-);
-
-success, posLast, result = parser(bird, 0)
-
-assert (success == True and "".join(result) == "birb"), "parser(bird, 0) should return True and 'birb'"
-
-
-print("Good")
-
 print("[TEST] Regex matching:")
 
 textpression = "  morsa = Rock frog\n    sangoughenbraw = Spectacular tornado"
@@ -60,8 +48,6 @@ parser = basic.gen_until(
 );
 
 success, posLast, result = parser(textpression, 0)
-
-
 
 print(result)
 
@@ -77,14 +63,21 @@ for name in craftfilenames:
     with open (name, "r") as craftfile:
         craftdata = craftfile.read()
 
-    print("* Parsing...")
-    success, _, craft_parsed = craft.parse_craft_file(craftdata, 0)
+    print(f"* Parsing ({len(craftdata)} chars)...")
     
-    print(f"* Parse successful: {success}")
+    success = False
+    
+    def timedfunc():
+        timedfunc.success, _, timedfunc.craft_parsed = craft.parse_craft_file(craftdata, 0)
+    
+    timeSec = timeit.timeit(timedfunc, number=1)
+    timeMs = round(timeSec * 1000, 2)
+    
+    print(f"* [successful: {timedfunc.success}] [time: {timeMs}ms] [chars/s: {round(len(craftdata) / timeSec, 1)}]")
 
     count = 0
 
-    for block in craft_parsed.blocks:
+    for block in timedfunc.craft_parsed.blocks:
         if block[0] == "PART":
             count = count + 1
 

@@ -1,7 +1,4 @@
 import re
-from itertools import tee
-from itertools import islice
-from copy import deepcopy
 from time import sleep
 
 # Basic parsing functions
@@ -67,41 +64,7 @@ def gen_regex(pattern, group):
         else:
             return (False, pos, None)
     return parser
-    
-#def gen_char_until(char_func):
-    #def parser(string, pos):
-        #results = []
-        #posNew = pos
-        #try:
-            #while True:
-                #char_in = string[posNew]
-                #if char_func(char_in):
-                    #results.append(char_in)
-                    #posNew += 1
-                #else:
-                    #break;
-        #except StopIteration:
-            #pass
-        #return (True, posNew, results)
-    #return parser
 
-def gen_char_func(char_func):
-    def parser(string, pos):
-        if char_func(string[pos]):
-            return (True, pos + 1, string[pos])
-        else:
-            return (False, pos, None)
-    return parser
-
-def char_alpha(c): return c.isalpha()
-
-def char_alnum(c): return c.isalnum()
-
-def char_space(c): return c.isspace()
-
-def char_nonspace(c): return not c.isspace()
-
-def char_indent(c): return c == " " or c == "\t"
 
 
 #debugging
