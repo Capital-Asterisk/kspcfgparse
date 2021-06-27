@@ -1,6 +1,7 @@
-import basic
-import kspcfg
-import craft
+from kspcfgparse import parsergen
+from kspcfgparse import cfg
+from kspcfgparse import craft
+
 import timeit
 
 cat = "cat meow"
@@ -8,7 +9,7 @@ bird = "birb caw"
 
 print("[TEST] String Compare:")
 
-parser = basic.gen_str_compare("cat");
+parser = parsergen.gen_str_compare("cat");
 
 success, _, _ = parser(cat, 0)
 assert success == True, "parser(cat, 0) should return True"
@@ -20,11 +21,11 @@ print("Good")
 
 print("[TEST] Parser Sequences:")
 
-parser = basic.gen_seq(
-    basic.gen_str_compare("b"),
-    basic.gen_str_compare("i"),
-    basic.gen_str_compare("r"),
-    basic.gen_str_compare("b")
+parser = parsergen.gen_seq(
+    parsergen.gen_str_compare("b"),
+    parsergen.gen_str_compare("i"),
+    parsergen.gen_str_compare("r"),
+    parsergen.gen_str_compare("b")
 );
 
 success, _, _ = parser(cat, 0)
@@ -40,10 +41,10 @@ print("[TEST] Regex matching:")
 
 textpression = "  morsa = Rock frog\n    sangoughenbraw = Spectacular tornado"
 
-parser = basic.gen_until(
-    basic.gen_seq(
-        basic.gen_regex(r"\s*(\w+)\s*=", 1),
-        basic.gen_regex(r"\s*(.*)", 1)
+parser = parsergen.gen_until(
+    parsergen.gen_seq(
+        parsergen.gen_regex(r"\s*(\w+)\s*=", 1),
+        parsergen.gen_regex(r"\s*(.*)", 1)
     )
 );
 

@@ -1,4 +1,4 @@
-from kspcfg import *
+from .cfg import *
 
 def parse_craft_file(string, pos):
     

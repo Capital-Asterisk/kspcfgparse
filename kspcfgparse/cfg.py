@@ -1,4 +1,4 @@
-from basic import *
+from .parsergen import *
 from collections import namedtuple
 
 KSPBlock = namedtuple("KSPBlock", ['properties', 'blocks'])
